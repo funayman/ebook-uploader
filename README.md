@@ -1,3 +1,5 @@
+# Simple eBook Uploader
+
 Created as a way to lazily upload eBooks on my NAS instead of using `curl` every time.
 
 Workflow:
