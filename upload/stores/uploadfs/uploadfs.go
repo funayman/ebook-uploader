@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/inhies/go-bytesize"
 	"go.uber.org/zap"
 )
 
@@ -60,7 +61,7 @@ func (s *Store) Save(name string, src io.ReadCloser) error {
 	if err != nil {
 		return fmt.Errorf("io.Copy: %w", err)
 	}
-	s.log.Infow("copied file to disk", "bytes", n, "filename", fn, "since", time.Since(t))
+	s.log.Infow("copied file to disk", "bytes", bytesize.ByteSize(n).String(), "filename", fn, "since", time.Since(t))
 
 	return nil
 }

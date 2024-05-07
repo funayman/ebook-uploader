@@ -31,7 +31,12 @@ func (h *handler) uploadForm(ctx context.Context, w http.ResponseWriter, r *http
 	form := `<html>
 <body>
 <form action="/upload" method="POST" enctype="multipart/form-data">
-<input type="file" name="btn-upload" id="btn-upload" multiple/>
+<input
+	id="btn-upload"
+	name="btn-upload"
+	type="file"
+	accept=".prc,.cbr,.lit,.doc,.djvu,.opus,.html,.odt,.ogg,.cbz,.rtf,.mobi,.mp3,.wav,.m4b,.fb2,.epub,.azw3,.pdf,.mp4,.m4a,.azw,.docx,.kepub,.txt,.cbt,.flac"
+	multiple />
 <button type="submit">SUBMIT!</button>
 </form>
 </body>
