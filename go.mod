@@ -1,4 +1,4 @@
-module github.com/funayman/simple-file-uploader
+module github.com/funayman/ebook-uploader
 
 go 1.21.8
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/funayman/simple-file-uploader/web"
+	"github.com/funayman/ebook-uploader/web"
 )
 
 func LimitBodySize(maxSize int64) web.Middleware {

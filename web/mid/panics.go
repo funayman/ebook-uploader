@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/funayman/simple-file-uploader/web"
+	"github.com/funayman/ebook-uploader/web"
 )
 
 func Panics() web.Middleware {

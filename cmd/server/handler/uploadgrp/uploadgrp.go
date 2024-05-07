@@ -7,8 +7,8 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/funayman/simple-file-uploader/upload"
-	"github.com/funayman/simple-file-uploader/web"
+	"github.com/funayman/ebook-uploader/upload"
+	"github.com/funayman/ebook-uploader/web"
 )
 
 var (

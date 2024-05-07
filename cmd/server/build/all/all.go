@@ -3,9 +3,9 @@
 package all
 
 import (
-	"github.com/funayman/simple-file-uploader/cmd/server/handler/uploadgrp"
-	"github.com/funayman/simple-file-uploader/web"
-	"github.com/funayman/simple-file-uploader/web/mux"
+	"github.com/funayman/ebook-uploader/cmd/server/handler/uploadgrp"
+	"github.com/funayman/ebook-uploader/web"
+	"github.com/funayman/ebook-uploader/web/mux"
 )
 
 func Routes() all {

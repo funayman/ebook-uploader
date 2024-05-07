@@ -16,12 +16,12 @@ import (
 	"github.com/inhies/go-bytesize"
 	"go.uber.org/zap"
 
-	"github.com/funayman/simple-file-uploader/cmd/server/build/all"
-	"github.com/funayman/simple-file-uploader/upload"
-	"github.com/funayman/simple-file-uploader/upload/stores/uploadfs"
-	"github.com/funayman/simple-file-uploader/web"
-	"github.com/funayman/simple-file-uploader/web/debug"
-	"github.com/funayman/simple-file-uploader/web/mux"
+	"github.com/funayman/ebook-uploader/cmd/server/build/all"
+	"github.com/funayman/ebook-uploader/upload"
+	"github.com/funayman/ebook-uploader/upload/stores/uploadfs"
+	"github.com/funayman/ebook-uploader/web"
+	"github.com/funayman/ebook-uploader/web/debug"
+	"github.com/funayman/ebook-uploader/web/mux"
 )
 
 const (

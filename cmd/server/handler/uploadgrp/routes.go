@@ -5,9 +5,9 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/funayman/simple-file-uploader/upload"
-	"github.com/funayman/simple-file-uploader/web"
-	"github.com/funayman/simple-file-uploader/web/mid"
+	"github.com/funayman/ebook-uploader/upload"
+	"github.com/funayman/ebook-uploader/web"
+	"github.com/funayman/ebook-uploader/web/mid"
 )
 
 type Config struct {

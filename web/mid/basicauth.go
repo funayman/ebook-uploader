@@ -7,7 +7,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/funayman/simple-file-uploader/web"
+	"github.com/funayman/ebook-uploader/web"
 )
 
 var (

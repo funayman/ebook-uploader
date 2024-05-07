@@ -8,7 +8,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/funayman/simple-file-uploader/web"
+	"github.com/funayman/ebook-uploader/web"
 )
 
 func Logger(log *zap.SugaredLogger) web.Middleware {
