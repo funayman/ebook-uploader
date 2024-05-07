@@ -48,5 +48,5 @@ build-server:
 # ==============================================================================
 # execution
 
-run-api-local:
+run-local:
 	go run cmd/server/main.go $(ARGS) | go run cmd/logfmt/main.go

@@ -11,6 +11,10 @@ import (
 	"github.com/funayman/ebook-uploader/web"
 )
 
+const (
+	defaultFormUploadID = "btn-upload"
+)
+
 var (
 	ErrMissingFormField = errors.New("missing required form field")
 )
@@ -18,32 +22,44 @@ var (
 type handler struct {
 	uploadCore    *upload.Core
 	maxUploadSize int64
+	formUploadID  string
 }
 
 func newHandler(uploadCore *upload.Core, maxUploadSize int64) *handler {
 	return &handler{
 		uploadCore:    uploadCore,
 		maxUploadSize: maxUploadSize,
+		formUploadID:  defaultFormUploadID,
 	}
 }
 
 func (h *handler) uploadForm(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	form := `<html>
-<body>
-<form action="/upload" method="POST" enctype="multipart/form-data">
-<input
-	id="btn-upload"
-	name="btn-upload"
-	type="file"
-	accept=".prc,.cbr,.lit,.doc,.djvu,.opus,.html,.odt,.ogg,.cbz,.rtf,.mobi,.mp3,.wav,.m4b,.fb2,.epub,.azw3,.pdf,.mp4,.m4a,.azw,.docx,.kepub,.txt,.cbt,.flac"
-	multiple />
-<button type="submit">SUBMIT!</button>
-</form>
-</body>
+	form := `
+<html>
+	<head>
+		<title>Simple eBook Uploader</title>
+	</head>
+	<body>
+		<form action="/upload" method="POST" enctype="multipart/form-data">
+			<input
+				id="{{ .InputID }}"
+				name="{{ .InputID }}"
+				type="file"
+				accept=".prc,.cbr,.lit,.doc,.djvu,.opus,.html,.odt,.ogg,.cbz,.rtf,.mobi,.mp3,.wav,.m4b,.fb2,.epub,.azw3,.pdf,.mp4,.m4a,.azw,.docx,.kepub,.txt,.cbt,.flac"
+				multiple />
+			<button type="submit">SUBMIT!</button>
+		</form>
+	</body>
 </html>
 `
+	data := struct {
+		InputID string
+	}{
+		InputID: h.formUploadID,
+	}
+
 	t := template.Must(template.New("").Parse(form))
-	return web.RespondHTMLTemplate(ctx, t, w, nil, 200)
+	return web.RespondHTMLTemplate(ctx, t, w, data, http.StatusOK)
 }
 
 func (h *handler) uploadFile(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
@@ -52,11 +68,11 @@ func (h *handler) uploadFile(ctx context.Context, w http.ResponseWriter, r *http
 	}
 	defer r.MultipartForm.RemoveAll()
 
-	if _, ok := r.MultipartForm.File["btn-upload"]; !ok {
+	if _, ok := r.MultipartForm.File[h.formUploadID]; !ok {
 		return ErrMissingFormField
 	}
 
-	for _, mpf := range r.MultipartForm.File["btn-upload"] {
+	for _, mpf := range r.MultipartForm.File[h.formUploadID] {
 		err := func() error {
 			src, err := mpf.Open()
 			if err != nil {
@@ -72,36 +88,10 @@ func (h *handler) uploadFile(ctx context.Context, w http.ResponseWriter, r *http
 		}
 	}
 
-	return web.RespondJSON(ctx, w, "upload complete", 200)
+	data := struct {
+		Location string `json:"location"`
+	}{
+		Location: "/",
+	}
+	return web.RespondJSON(ctx, w, data, http.StatusOK)
 }
-
-// func (h *handler) doUpload(r *http.Request) error {
-// 	var isUploadFieldPresent bool
-//
-// 	mpr, err := r.MultipartReader()
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	var part *multipart.Part
-// 	for part, err = mpr.NextPart(); err == nil; part, err = mpr.NextPart() {
-// 		if part.FormName() != "btn-upload" {
-// 			continue
-// 		}
-//
-// 		isUploadFieldPresent = true
-// 		if err := h.uploadCore.Save(part.FileName(), part); err != nil {
-// 			fmt.Errorf("upload core: %w", err)
-// 		}
-// 	}
-//
-// 	if !errors.Is(err, io.EOF) {
-// 		return fmt.Errorf("doUpload: %w", err)
-// 	}
-//
-// 	if !isUploadFieldPresent {
-// 		return ErrMissingFormField
-// 	}
-//
-// 	return nil
-// }
