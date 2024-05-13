@@ -21,6 +21,7 @@ import (
 	"github.com/funayman/ebook-uploader/upload/stores/uploadfs"
 	"github.com/funayman/ebook-uploader/upload/stores/uploadgcs"
 	"github.com/funayman/ebook-uploader/upload/stores/uploadmulti"
+	"github.com/funayman/ebook-uploader/upload/stores/uploads3"
 	"github.com/funayman/ebook-uploader/web"
 	"github.com/funayman/ebook-uploader/web/debug"
 )
@@ -129,16 +130,15 @@ func run(ctx context.Context, log *zap.SugaredLogger) error {
 		}
 	}
 
-	// TODO implement
-	// if len(config.Upload.S3.Buckets) > 0 {
-	// 	for _, bucket := range config.Upload.S3.Buckets {
-	// 		uploadStoreS3, err := uploads3.NewStore(log, bucket)
-	// 		if err != nil {
-	// 			return err
-	// 		}
-	// 		stores = append(stores, uploadStoreS3)
-	// 	}
-	// }
+	if len(config.Upload.S3.Buckets) > 0 {
+		for _, bucket := range config.Upload.S3.Buckets {
+			uploadStoreS3, err := uploads3.NewStore(log, bucket)
+			if err != nil {
+				return err
+			}
+			stores = append(stores, uploadStoreS3)
+		}
+	}
 
 	store, err := uploadmulti.NewStore(log, stores...)
 	if err != nil {
