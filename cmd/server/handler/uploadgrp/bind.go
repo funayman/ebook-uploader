@@ -16,9 +16,9 @@ type Config struct {
 	MaxUploadSize int64
 }
 
-func Routes(app *web.App, cfg Config) {
-	h := newHandler(cfg.UploadCore, cfg.MaxUploadSize)
+func Bind(app *web.App, config Config) {
+	h := newHandler(config.UploadCore, config.MaxUploadSize)
 
 	app.Handle(http.MethodGet, "/upload", h.uploadForm)
-	app.Handle(http.MethodPost, "/upload", h.uploadFile, mid.LimitBodySize(cfg.MaxUploadSize))
+	app.Handle(http.MethodPost, "/upload", h.uploadFile, mid.LimitBodySize(config.MaxUploadSize))
 }

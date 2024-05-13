@@ -16,12 +16,13 @@ import (
 	"github.com/inhies/go-bytesize"
 	"go.uber.org/zap"
 
-	"github.com/funayman/ebook-uploader/cmd/server/build/all"
+	"github.com/funayman/ebook-uploader/cmd/server/handler"
 	"github.com/funayman/ebook-uploader/upload"
 	"github.com/funayman/ebook-uploader/upload/stores/uploadfs"
+	"github.com/funayman/ebook-uploader/upload/stores/uploadgcs"
+	"github.com/funayman/ebook-uploader/upload/stores/uploadmulti"
 	"github.com/funayman/ebook-uploader/web"
 	"github.com/funayman/ebook-uploader/web/debug"
-	"github.com/funayman/ebook-uploader/web/mux"
 )
 
 const (
@@ -56,10 +57,18 @@ func run(ctx context.Context, log *zap.SugaredLogger) error {
 			HostPort           string        `conf:"default:0.0.0.0:8000"`
 			DebugHostPort      string        `conf:"default:0.0.0.0:4000"`
 			CORSAllowedOrigins []string      `conf:"default:*"`
+			MaxFileSize        string        `conf:"default:50MB"`
 		}
 		Upload struct {
-			Dir         string `conf:"default:./uploads"`
-			MaxFileSize string `conf:"default:50MB"`
+			FS struct {
+				Dirs []string `conf:"default:./uploads"`
+			}
+			GCP struct {
+				Buckets []string
+			}
+			S3 struct {
+				Buckets []string
+			}
 		}
 		conf.Version
 	}{
@@ -98,31 +107,65 @@ func run(ctx context.Context, log *zap.SugaredLogger) error {
 	// -------------------------------------------------------------------------
 	// storage for uploads
 
-	maxUploadSize, err := bytesize.Parse(config.Upload.MaxFileSize)
+	stores := []upload.Storer{}
+
+	if len(config.Upload.FS.Dirs) > 0 {
+		for _, dir := range config.Upload.FS.Dirs {
+			uploadStoreFS, err := uploadfs.NewStore(log, dir)
+			if err != nil {
+				return err
+			}
+			stores = append(stores, uploadStoreFS)
+		}
+	}
+
+	if len(config.Upload.GCP.Buckets) > 0 {
+		for _, bucket := range config.Upload.GCP.Buckets {
+			uploadStoreGCS, err := uploadgcs.NewStore(log, bucket)
+			if err != nil {
+				return err
+			}
+			stores = append(stores, uploadStoreGCS)
+		}
+	}
+
+	if len(config.Upload.S3.Buckets) > 0 {
+		// TODO implement
+		// for _, bucket := range config.Upload.S3.Buckets {
+		// 	uploadStoreS3, err := uploads3.NewStore(log, bucket)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// 	stores = append(stores, uploadStoreS3)
+		// }
+	}
+
+	store, err := uploadmulti.NewStore(log, stores...)
 	if err != nil {
 		return err
 	}
-	uploadStoreFS, err := uploadfs.NewStore(log, config.Upload.Dir)
-	if err != nil {
-		return err
-	}
-	uploadCore := upload.NewCore(log, uploadStoreFS)
+
+	uploadCore := upload.NewCore(log, store)
 
 	// -------------------------------------------------------------------------
 	// main web service
 
-	muxConfig := mux.Config{
-		Build:         build,
+	maxUploadSize, err := bytesize.Parse(config.Web.MaxFileSize)
+	if err != nil {
+		return err
+	}
+
+	mux := handler.Mux(handler.Config{
 		ShutdownCh:    shutdownCh,
+		CORSOrigins:   config.Web.CORSAllowedOrigins,
 		Log:           log,
 		UploadCore:    uploadCore,
 		MaxUploadSize: int64(maxUploadSize),
-	}
-	webAPIMux := mux.Web(muxConfig, config.Web.CORSAllowedOrigins, all.Routes())
+	})
 
 	svr := http.Server{
 		Addr:         config.Web.HostPort,
-		Handler:      webAPIMux,
+		Handler:      mux,
 		ReadTimeout:  config.Web.ReadTimeout,
 		WriteTimeout: config.Web.WriteTimeout,
 		IdleTimeout:  config.Web.IdleTimeout,

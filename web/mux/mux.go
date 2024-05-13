@@ -7,17 +7,14 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/funayman/ebook-uploader/upload"
 	"github.com/funayman/ebook-uploader/web"
 	"github.com/funayman/ebook-uploader/web/mid"
 )
 
 type Config struct {
-	Build         string
-	ShutdownCh    chan os.Signal
-	Log           *zap.SugaredLogger
-	UploadCore    *upload.Core
-	MaxUploadSize int64
+	Build      string
+	ShutdownCh chan os.Signal
+	Log        *zap.SugaredLogger
 }
 
 // RouteAdder defines behavior that sets routes to bind to an instance
