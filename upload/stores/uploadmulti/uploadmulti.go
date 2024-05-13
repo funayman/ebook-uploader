@@ -31,8 +31,7 @@ func NewStore(log *zap.SugaredLogger, stores ...upload.Storer) (*Store, error) {
 func (s *Store) Save(name string, src io.ReadCloser) error {
 	n := len(s.stores)
 
-	closers := make([]io.Closer, n)
-	writers := make([]io.Writer, n)
+	wcs := make([]io.WriteCloser, n)
 	results := make(chan error)
 	errs := make([]error, 0, n+1)
 	defer close(results)
@@ -40,25 +39,18 @@ func (s *Store) Save(name string, src io.ReadCloser) error {
 	for i := 0; i < len(s.stores); i++ {
 		store := s.stores[i]
 		pr, pw := io.Pipe()
-		closers[i] = pw
-		writers[i] = pw
+		wcs[i] = pw
 
 		go func(store upload.Storer) {
 			results <- store.Save(name, pr)
 		}(store)
 	}
 
-	go func(writers []io.Writer, closers []io.Closer) {
-		defer func() {
-			for _, c := range closers {
-				c.Close()
-			}
-		}()
-
-		mw := io.MultiWriter(writers...)
-		_, err := io.Copy(mw, src)
+	go func(wc io.WriteCloser) {
+		defer wc.Close()
+		_, err := io.Copy(wc, src)
 		results <- err
-	}(writers, closers)
+	}(MultiWriteCloser(wcs...))
 
 	for i := 0; i < n+1; i++ {
 		if err := <-results; err != nil {
