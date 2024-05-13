@@ -5,8 +5,9 @@ import (
 	"errors"
 	"io"
 
-	"github.com/funayman/ebook-uploader/upload"
 	"go.uber.org/zap"
+
+	"github.com/funayman/ebook-uploader/upload"
 )
 
 var (
@@ -29,6 +30,7 @@ func NewStore(log *zap.SugaredLogger, stores ...upload.Storer) (*Store, error) {
 // within the Store and the name provided in the function as the full path
 func (s *Store) Save(name string, src io.ReadCloser) error {
 	n := len(s.stores)
+
 	closers := make([]io.Closer, n)
 	writers := make([]io.Writer, n)
 	results := make(chan error)
