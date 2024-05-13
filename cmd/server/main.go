@@ -129,16 +129,16 @@ func run(ctx context.Context, log *zap.SugaredLogger) error {
 		}
 	}
 
-	if len(config.Upload.S3.Buckets) > 0 {
-		// TODO implement
-		// for _, bucket := range config.Upload.S3.Buckets {
-		// 	uploadStoreS3, err := uploads3.NewStore(log, bucket)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// 	stores = append(stores, uploadStoreS3)
-		// }
-	}
+	// TODO implement
+	// if len(config.Upload.S3.Buckets) > 0 {
+	// 	for _, bucket := range config.Upload.S3.Buckets {
+	// 		uploadStoreS3, err := uploads3.NewStore(log, bucket)
+	// 		if err != nil {
+	// 			return err
+	// 		}
+	// 		stores = append(stores, uploadStoreS3)
+	// 	}
+	// }
 
 	store, err := uploadmulti.NewStore(log, stores...)
 	if err != nil {
