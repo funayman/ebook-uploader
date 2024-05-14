@@ -17,7 +17,7 @@ var (
 )
 
 func init() {
-	log, _ = logger.New("TESTS")
+	log, _ = logger.New("TESTS", logger.WithLevel("FATAL"))
 }
 
 type testUploader struct {
