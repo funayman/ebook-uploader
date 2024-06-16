@@ -91,7 +91,43 @@ func (h *handler) uploadFile(ctx context.Context, w http.ResponseWriter, r *http
 	data := struct {
 		Location string `json:"location"`
 	}{
-		Location: "/",
+		Location: "/upload/complete",
 	}
 	return web.RespondJSON(ctx, w, data, http.StatusOK)
+}
+
+func (h *handler) uploadSuccessError(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	status := 200
+	html := `
+<html>
+	<head>
+		<title>Upload Complete</title>
+	</head>
+	<body>
+		<h1>File Successfully Uploaded!~</h1>
+
+		<p>Redirecting you to CalibreWeb in <span id="seconds">{{ .Seconds }}</span> seconds</p>
+		<script type="text/javascript">
+			var timeleft = {{ .Seconds }};
+			var redirectTimer = setInterval(function(){
+				timeleft--;
+				document.getElementById("seconds").textContent = timeleft;
+				if(timeleft <= 0) {
+					clearInterval(redirectTimer);
+					window.location.href = "/";
+				}
+			},1000);
+		</script>
+	</body>
+</html>
+`
+	data := struct {
+		Seconds int64
+	}{
+		Seconds: 10,
+	}
+
+	t := template.Must(template.New("").Parse(html))
+
+	return web.RespondHTMLTemplate(ctx, t, w, data, status)
 }

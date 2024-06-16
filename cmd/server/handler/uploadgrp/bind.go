@@ -21,4 +21,5 @@ func Bind(app *web.App, config Config) {
 
 	app.Handle(http.MethodGet, "/upload", h.uploadForm)
 	app.Handle(http.MethodPost, "/upload", h.uploadFile, mid.LimitBodySize(config.MaxUploadSize))
+	app.Handle(http.MethodGet, "/upload/complete", h.uploadSuccessError)
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/html"
+	"github.com/tdewolff/minify/v2/js"
 	"github.com/tdewolff/minify/v2/svg"
 )
 
@@ -81,6 +82,7 @@ func RespondHTMLTemplate(ctx context.Context, t *template.Template, w http.Respo
 	})
 	m.AddFunc("image/svg+xml", svg.Minify)
 	m.AddFunc("text/css", css.Minify)
+	m.AddFunc("text/javascript", js.Minify)
 	if err := m.Minify("text/html", w, pr); err != nil {
 		return err
 	}

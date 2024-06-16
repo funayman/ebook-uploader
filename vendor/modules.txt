@@ -225,6 +225,7 @@ github.com/inhies/go-bytesize
 github.com/tdewolff/minify/v2
 github.com/tdewolff/minify/v2/css
 github.com/tdewolff/minify/v2/html
+github.com/tdewolff/minify/v2/js
 github.com/tdewolff/minify/v2/svg
 github.com/tdewolff/minify/v2/xml
 # github.com/tdewolff/parse/v2 v2.7.13
@@ -233,6 +234,7 @@ github.com/tdewolff/parse/v2
 github.com/tdewolff/parse/v2/buffer
 github.com/tdewolff/parse/v2/css
 github.com/tdewolff/parse/v2/html
+github.com/tdewolff/parse/v2/js
 github.com/tdewolff/parse/v2/strconv
 github.com/tdewolff/parse/v2/xml
 # go.opencensus.io v0.24.0
